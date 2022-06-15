@@ -1,0 +1,177 @@
+<!-- https://ejs.co -->
+<!--suppress HtmlUnknownTarget, JSUnresolvedLibraryURL -->
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Добро пожаловать | <%= app.name %></title>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="<%= og.title %>">
+  <meta property="og:description" content="<%= og.description %>">
+  <meta property="og:image" content="<%= og.image %>">
+  <style>
+    *,
+    ::before,
+    ::after {
+      box-sizing: inherit;
+      margin: 0;
+      padding: 0;
+      font-size: inherit;
+      color: inherit;
+      outline: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      -webkit-touch-callout: none;
+    }
+
+    html {
+      font-size: 14px;
+      font-family: Menlo, Consolas, Roboto Mono, Ubuntu Monospace, Oxygen Mono, Liberation Mono, monospace;
+    }
+
+    html,
+    body,
+    .main {
+      height: 100%;
+    }
+
+    .main {
+      position: relative;
+      z-index: 0;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: center;
+      min-width: 320px;
+    }
+
+    .image {
+      display: block;
+      max-width: 500px;
+      width: 90%;
+      height: auto;
+    }
+
+    .pressure {
+      font-size: 12px;
+      line-height: 20px;
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      color: gray;
+      text-align: left;
+      white-space: pre;
+    }
+
+    .application {
+      font-size: 12px;
+      line-height: 20px;
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      color: gray;
+      text-align: right;
+    }
+
+    .button {
+      text-decoration: none;
+      border: 1px solid #e1e1e1;
+      display: inline-block;
+      padding: 3px 15px;
+      margin: 6px 0;
+      transition: all ease .15s;
+    }
+
+    .button:hover,
+    .button:focus {
+      border-color: #cacaca;
+    }
+
+    @-webkit-keyframes pulse {
+      from {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+      }
+
+      50% {
+        -webkit-transform: scale3d(1.05, 1.05, 1.05);
+        transform: scale3d(1.05, 1.05, 1.05);
+      }
+
+      to {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+      }
+    }
+
+    @keyframes pulse {
+      from {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+      }
+
+      50% {
+        -webkit-transform: scale3d(1.05, 1.05, 1.05);
+        transform: scale3d(1.05, 1.05, 1.05);
+      }
+
+      to {
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+      }
+    }
+
+    .animate {
+      -webkit-animation-duration: 1s;
+      animation-duration: 1s;
+      -webkit-animation-fill-mode: both;
+      animation-fill-mode: both;
+      -webkit-animation-iteration-count: infinite;
+      animation-iteration-count: infinite;
+      -webkit-animation-name: pulse;
+      animation-name: pulse;
+      -webkit-animation-timing-function: ease-in-out;
+      animation-timing-function: ease-in-out;
+    }
+  </style>
+</head>
+<body>
+<main class="main">
+  <img class="image animate" src="/static/logo.jpg" alt="logo">
+  <div id="pressure" class="pressure"></div>
+  <div class="application">
+    <div><%= app.name %>: <%= app.release %></div>
+    <div id="launch"><%= app.launch %></div>
+    <% if (debug || oas.expose) { %>
+    <div>
+      <a class="button" href="/documentation/static/index.html">Swagger</a>
+<!--      <a class="button" href="/documentation/docs.html">ReDoc</a>-->
+    </div>
+    <% } %>
+  </div>
+</main>
+<script type="text/javascript">
+  document.getElementById('launch').innerText = new Date('<%= app.launch %>').toLocaleString()
+  const pressure = document.getElementById('pressure')
+  const getPressure = async () => {
+    try {
+      const fr = await fetch(`/pressure`)
+      const fd = await fr.json()
+      pressure.innerText = [
+        `RSS: ${(fd.rssBytes / 1000000).toFixed(2)} MB`,
+        `HeapUsed: ${(fd.heapUsed / 1000000).toFixed(2)} MB`,
+        `EventLoopDelay: ${fd.eventLoopDelay.toFixed(3)} ms`
+      ].join('\n')
+      setTimeout(getPressure, 2000)
+    } catch (e) {
+      setTimeout(getPressure, 10000)
+    }
+  }
+  getPressure()
+</script>
+</body>
+</html>

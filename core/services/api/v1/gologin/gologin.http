@@ -1,0 +1,42 @@
+### POST /gologin/profile
+POST {{url}}/gologin/profile
+Content-Type: application/json
+Authorization: {{tokenClient}}
+
+{
+  "name": "test_profile_1",
+  "os": "mac",
+  "navigator": {
+    "language": "enUS",
+    "userAgent": "random",
+    "resolution": "1024x768",
+    "platform": "mac"
+  }
+}
+
+### PATCH /gologin/profile/:profileId
+PATCH {{url}}/gologin/profile/62762a9c1462b40c0109ff19
+Content-Type: application/json
+Authorization: {{tokenClient}}
+
+{
+  "name": "test_profile_33"
+}
+
+### POST /gologin/profile/start
+POST {{url}}/gologin/profile/start
+Content-Type: application/json
+Authorization: {{tokenClient}}
+
+{
+  "profileId": "62762a9c1462b40c0109ff19"
+}
+
+### POST /gologin/profile/stop
+POST {{url}}/gologin/profile/stop
+Content-Type: application/json
+Authorization: {{tokenClient}}
+
+{
+  "profileId": "62762a9c1462b40c0109ff19"
+}
